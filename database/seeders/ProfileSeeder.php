@@ -18,8 +18,16 @@ class ProfileSeeder extends Seeder
                 'title' => 'Nick Denys',
                 'bio' => 'Short bio about me...',
                 'links' => [
-                    'github' => 'https://www.github.com/nickdenys',
-                    'linkedin' => 'https://www.linkedin.com/in/nickdenys',
+                    [
+                        'title' => 'GitHub',
+                        'handle' => 'github',
+                        'url' => 'https://www.github.com/nickdenys',
+                    ],
+                    [
+                        'title' => 'LinkedIn',
+                        'handle' => 'linkedin',
+                        'url' => 'https://www.linkedin.com/in/nickdenys',
+                    ],
                 ]
             ]
         );

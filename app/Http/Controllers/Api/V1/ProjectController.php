@@ -26,6 +26,7 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'handle' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'url' => ['nullable', 'url', 'max:2048'],
             'order' => ['nullable', 'integer'],
@@ -34,6 +35,7 @@ class ProjectController extends Controller
 
         $project = new Project();
         $project->title = $validated['title'];
+        $project->handle = $validated['handle'] ?? Str::slug($validated['title']);
         $project->description = $validated['description'] ?? null;
         $project->url = $validated['url'] ?? null;
         $project->order = $validated['order'] ?? 0;
@@ -44,7 +46,7 @@ class ProjectController extends Controller
             $disk = config('filesystems.default', 'local');
             $ext = $uploadedFile->getClientOriginalExtension();
             $originalName = $uploadedFile->getClientOriginalName();
-            $objectKey = 'projects/' . $project->title . '/' . Str::uuid() . ($ext ? ('.' . $ext) : '');
+            $objectKey = 'projects/' . $project->handle . '/' . Str::uuid() . ($ext ? ('.' . $ext) : '');
 
             // Store the file
             Storage::disk($disk)->putFileAs(

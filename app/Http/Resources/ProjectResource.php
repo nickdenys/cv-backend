@@ -15,11 +15,15 @@ class ProjectResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $image = $this->whenLoaded('image', function () {
+            return new FileResource($this->image);
+        });
+
         return [
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'image_url' => $this->image_path ? url(Storage::url($this->image_path)) : null,
+            'image' => $image,
             'url' => $this->url,
         ];
     }

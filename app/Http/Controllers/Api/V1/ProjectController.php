@@ -18,7 +18,7 @@ class ProjectController extends Controller
     public function index()
     {
         return ProjectResource::collection(
-            Project::with('image')->orderBy('order')->get()
+            Project::with('image')->orderBy('order')->orderByDesc('title')->get()
         );
     }
 
@@ -65,9 +65,6 @@ class ProjectController extends Controller
 
             // Link to project
             $project->project_image_id = $file->id;
-
-            // Keep legacy image_path for existing consumers (used by ProjectResource fallback)
-            $project->image_path = $objectKey;
         }
 
         $project->save();

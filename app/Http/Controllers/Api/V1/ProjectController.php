@@ -75,4 +75,91 @@ class ProjectController extends Controller
             ->response()
             ->setStatusCode(201);
     }
+
+    public function update(Request $request, string $id)
+    {
+        $project = Project::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => ['sometimes', 'string', 'max:255'],
+            'handle' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'description' => ['sometimes', 'nullable', 'string'],
+            'url' => ['sometimes', 'nullable', 'url', 'max:2048'],
+            'order' => ['sometimes', 'nullable', 'integer'],
+            'image' => ['sometimes', 'nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
+        ]);
+
+        // Update scalar fields only if provided
+        if (array_key_exists('title', $validated)) {
+            $project->title = $validated['title'];
+        }
+        if (array_key_exists('handle', $validated)) {
+            // If handle is provided (even null), update accordingly; otherwise leave as-is
+            $project->handle = $validated['handle'] ?? $project->handle;
+        }
+        if (array_key_exists('description', $validated)) {
+            $project->description = $validated['description'];
+        }
+        if (array_key_exists('url', $validated)) {
+            $project->url = $validated['url'];
+        }
+        if (array_key_exists('order', $validated)) {
+            $project->order = $validated['order'] ?? 0;
+        }
+
+        // Handle optional image upload
+        if ($request->hasFile('image')) {
+            $uploadedFile = $request->file('image');
+
+            $disk = config('filesystems.default', 'local');
+            $ext = $uploadedFile->getClientOriginalExtension();
+            $originalName = $uploadedFile->getClientOriginalName();
+            $objectKey = 'projects/' . $project->handle . '/' . Str::uuid() . ($ext ? ('.' . $ext) : '');
+
+            Storage::disk($disk)->putFileAs(
+                dirname($objectKey),
+                $uploadedFile,
+                basename($objectKey)
+            );
+
+            $file = File::create([
+                'disk' => $disk,
+                'bucket' => config("filesystems.disks.$disk.bucket"),
+                'object_key' => $objectKey,
+                'filename' => $originalName,
+                'extension' => $ext ?: null,
+                'uploaded_at' => now(),
+            ]);
+
+            $project->project_image_id = $file->id;
+        }
+
+        $project->save();
+
+        return (new ProjectResource($project->load('image')))
+            ->response()
+            ->setStatusCode(200);
+    }
+
+    public function destroy(string $id)
+    {
+        $project = Project::findOrFail($id);
+
+        // Optionally also delete the associated image record and file from storage
+        if (request()->boolean('delete_image', false) && $project->project_image_id) {
+            $file = File::find($project->project_image_id);
+            if ($file) {
+                try {
+                    Storage::disk($file->disk)->delete($file->object_key);
+                } catch (\Throwable $e) {
+                    // ignore storage deletion errors; still remove DB record
+                }
+                $file->delete(); // soft delete
+            }
+        }
+
+        $project->delete();
+
+        return response()->noContent(); // 204
+    }
 }

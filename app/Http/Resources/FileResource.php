@@ -16,10 +16,7 @@ class FileResource extends JsonResource
     {
         return [
             'id'       => $this->id,
-            'url'      => $this->temporaryUrl(5, [
-                'ResponseContentDisposition' => 'inline; filename="'.$this->filename.'"',
-                'ResponseContentType'        => $this->mime ?? 'application/octet-stream',
-            ]),
+            'url'      => $this->getUrl(),
         ];
     }
 }

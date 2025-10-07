@@ -29,12 +29,8 @@ class File extends Model
         });
     }
 
-    public function temporaryUrl(int $minutes = 5, array $headers = []): string
+    public function getUrl(): string
     {
-        return Storage::disk($this->disk)->temporaryUrl(
-            $this->object_key,
-            now()->addMinutes($minutes),
-            $headers + ['ResponseContentDisposition' => 'inline; filename="'.$this->filename.'"']
-        );
+        return Storage::disk($this->disk)->url($this->object_key);
     }
 }

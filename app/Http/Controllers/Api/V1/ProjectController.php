@@ -18,7 +18,7 @@ class ProjectController extends Controller
     public function index()
     {
         return ProjectResource::collection(
-            Project::with('image')->orderBy('order')->orderByDesc('title')->get()
+            Project::with('image')->ordered()->get()
         );
     }
 
@@ -28,7 +28,6 @@ class ProjectController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'url' => ['nullable', 'url', 'max:2048'],
-            'order' => ['nullable', 'integer'],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
         ]);
 
@@ -37,7 +36,6 @@ class ProjectController extends Controller
         $project->handle = $validated['handle'] ?? Str::slug($validated['title']);
         $project->description = $validated['description'] ?? null;
         $project->url = $validated['url'] ?? null;
-        $project->order = $validated['order'] ?? 0;
 
         if ($request->hasFile('image')) {
             $uploadedFile = $request->file('image');
@@ -83,7 +81,6 @@ class ProjectController extends Controller
             'title' => ['sometimes', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string'],
             'url' => ['sometimes', 'nullable', 'url', 'max:2048'],
-            'order' => ['sometimes', 'nullable', 'integer'],
             'image' => ['sometimes', 'nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
         ]);
 
@@ -96,9 +93,6 @@ class ProjectController extends Controller
         }
         if (array_key_exists('url', $validated)) {
             $project->url = $validated['url'];
-        }
-        if (array_key_exists('order', $validated)) {
-            $project->order = $validated['order'] ?? 0;
         }
 
         // Handle optional image upload

@@ -15,10 +15,12 @@ class ProjectsTable
     {
         return $table
             ->columns([
+                TextColumn::make('order_column')
+                    ->label('Order')
+                    ->sortable(),
                 TextColumn::make('title')
                     ->searchable(),
-                TextColumn::make('handle')
-                    ->searchable(),
+                TextColumn::make('handle'),
                 TextColumn::make('url')
                     ->searchable(),
                 TextColumn::make('created_at')
@@ -41,6 +43,7 @@ class ProjectsTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('order', 'asc');
+            ->defaultSort('order_column', 'asc')
+            ->reorderable('order_column');
     }
 }

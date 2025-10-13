@@ -28,11 +28,7 @@ class ProjectForm
                 TextInput::make('url')
                     ->columnSpanFull()
                     ->label('URL')
-                    ->url(),
-                TextInput::make('order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                    ->url()
             ]);
     }
 }

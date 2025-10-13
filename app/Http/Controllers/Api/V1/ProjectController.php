@@ -26,7 +26,6 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'handle' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'url' => ['nullable', 'url', 'max:2048'],
             'order' => ['nullable', 'integer'],
@@ -82,7 +81,6 @@ class ProjectController extends Controller
 
         $validated = $request->validate([
             'title' => ['sometimes', 'string', 'max:255'],
-            'handle' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string'],
             'url' => ['sometimes', 'nullable', 'url', 'max:2048'],
             'order' => ['sometimes', 'nullable', 'integer'],
@@ -92,10 +90,6 @@ class ProjectController extends Controller
         // Update scalar fields only if provided
         if (array_key_exists('title', $validated)) {
             $project->title = $validated['title'];
-        }
-        if (array_key_exists('handle', $validated)) {
-            // If handle is provided (even null), update accordingly; otherwise leave as-is
-            $project->handle = $validated['handle'] ?? $project->handle;
         }
         if (array_key_exists('description', $validated)) {
             $project->description = $validated['description'];

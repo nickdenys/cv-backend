@@ -4,12 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
     protected $fillable = [
         'title', 'description', 'url', 'order', 'project_image_id',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $project) {
+            // Always ensure handle is a slug of the title on create/update
+            if ($project->isDirty('title') || blank($project->handle)) {
+                $project->handle = Str::slug((string) $project->title);
+            }
+        });
+    }
 
     public function image(): BelongsTo
     {

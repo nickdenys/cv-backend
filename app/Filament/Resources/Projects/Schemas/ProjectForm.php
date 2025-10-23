@@ -22,8 +22,8 @@ class ProjectForm
                     ->helperText('The handle is auto-generated from the title and cannot be changed.'),
                 RichEditor::make('description')
                     ->toolbarButtons([
-                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
                         ['undo', 'redo'],
+                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
                         ['clearFormatting'],
                     ])
                     ->columnSpanFull(),

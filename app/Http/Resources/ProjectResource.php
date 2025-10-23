@@ -26,7 +26,7 @@ class ProjectResource extends JsonResource
             'description' => $this->description,
             'image' => $image,
             'url' => $this->url,
-            'order' => $this->order,
+            'order' => $this->order_column,
             'updatedAt' => $this->updated_at,
         ];
     }
